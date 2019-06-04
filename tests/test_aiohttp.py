@@ -22,15 +22,8 @@ class MyUpload(graphene.Mutation):
     first_line = graphene.String()
 
     def mutate(self, info, file_in):
-        #print('GREG server file_in', file_in)
-        #print('GREG server type file_in', type(file_in))
-        #print('GREG server isinstance IOBase', isinstance(file_in, io.IOBase))
-        #print('GREG server file_in file', file_in.file)
-        #print('GREG server type file_in file', type(file_in.file))
-        #print('GREG server isinstance IOBase file', isinstance(file_in.file, io.IOBase))
-
-        first_line = file_in.readline().strip().decode('utf-8')
-        file_in.seek(0)
+        first_line = file_in.file.readline().strip().decode('utf-8')
+        file_in.file.seek(0)
         return MyUpload(ok=True, first_line=first_line)
 
 

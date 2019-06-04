@@ -21,11 +21,7 @@ class FileUploadGraphQLView(GraphQLView):
             for k, v in form.items():
                 if k in {'operations', 'map'}:
                     continue
-                if hasattr(v, 'file'):
-                    # aiohttp sends in FileField which has the file in .file
-                    files[k] = v.file
-                else:
-                    files[k] = v
+                files[k] = v
 
             return place_files_in_operations(
                 operations,
