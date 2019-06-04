@@ -11,13 +11,25 @@ class FileUploadGraphQLView(GraphQLView):
     async def parse_body(self, request):
         """Handle multipart request spec for multipart/form-data"""
         content_type = request.content_type
-        if content_type == 'multipart/form-data':
+        #if content_type == 'multipart/form-data':
+        if content_type == 'multipart/form-data' or content_type == 'application/x-www-form-urlencoded':
             form = dict(await request.post())
             operations = load_json_body(form.get('operations', '{}'))
             files_map = load_json_body(form.get('map', '{}'))
+
+            files = {}
+            for k, v in form.items():
+                if k in {'operations', 'map'}:
+                    continue
+                if hasattr(v, 'file'):
+                    # aiohttp sends in FileField which has the file in .file
+                    files[k] = v.file
+                else:
+                    files[k] = v
+
             return place_files_in_operations(
                 operations,
                 files_map,
-                request.files
+                files
             )
         return await super(FileUploadGraphQLView, self).parse_body(request)
